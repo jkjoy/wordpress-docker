@@ -1,5 +1,5 @@
 from nginx:latest
-MAINTAINER Dorward Villaruz <dorwardv@gmail.com>
+MAINTAINER jkjoy Villaruz <imsunpw@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -7,7 +7,7 @@ ENV DOCUMENT_ROOT /usr/share/nginx/html
 
 #Install nginx php-fpm php-pdo unzip curl
 RUN apt-get update 
-RUN apt-get -y install php5-fpm unzip curl apt-utils php5-curl php5-gd php5-intl php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-ming php5-ps php5-pspell php5-recode php5-sqlite php5-tidy php5-xmlrpc php5-xsl
+RUN apt-get -y install php8-fpm unzip curl apt-utils php8-curl php8-gd php8-intl php-pear php8-imagick php8-imap php8-mcrypt php8-memcache php8-ming php8-ps php8-pspell php5-recode php5-sqlite php5-tidy php5-xmlrpc php5-xsl
 
 RUN rm -rf ${DOCUMENT_ROOT}/*
 RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz
@@ -41,4 +41,4 @@ RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 EXPOSE 80
 EXPOSE 443
 
-CMD service php5-fpm start && nginx
+CMD service php8-fpm start && nginx
