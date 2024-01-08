@@ -1,5 +1,5 @@
 from nginx:latest
-MAINTAINER jkjoy Villaruz <imsunpw@gmail.com>
+MAINTAINER jkjoy <imsunpw@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
