@@ -16,7 +16,7 @@ RUN tar -xzvf /wordpress.tar.gz --strip-components=1 --directory ${DOCUMENT_ROOT
 RUN curl -o sqlite-plugin.zip https://downloads.wordpress.org/plugin/sqlite-database-integration.zip
 RUN unzip sqlite-plugin.zip -d ${DOCUMENT_ROOT}/wp-content/plugins/
 RUN rm sqlite-plugin.zip
-RUN cp ${DOCUMENT_ROOT}/wp-content/plugins/sqlite-integration/db.copy ${DOCUMENT_ROOT}/wp-content
+RUN cp ${DOCUMENT_ROOT}/wp-content/plugins/sqlite-database-integration/db.copy ${DOCUMENT_ROOT}/wp-content
 RUN cp ${DOCUMENT_ROOT}/wp-config-sample.php ${DOCUMENT_ROOT}/wp-config.php
 
 # nginx config
