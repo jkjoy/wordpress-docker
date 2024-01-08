@@ -17,7 +17,7 @@ RUN curl -o sqlite-plugin.zip https://downloads.wordpress.org/plugin/sqlite-data
 RUN unzip sqlite-plugin.zip -d ${DOCUMENT_ROOT}/wp-content/plugins/
 RUN rm sqlite-plugin.zip
 RUN cp ${DOCUMENT_ROOT}/wp-content/plugins/sqlite-database-integration/db.copy ${DOCUMENT_ROOT}/wp-content/db.php
-RUN cp ${DOCUMENT_ROOT}/wp-config-sample.php ${DOCUMENT_ROOT}/wp-config.php
+COPY config.php ${DOCUMENT_ROOT}/wp-config.php
 
 # nginx config
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
