@@ -7,8 +7,8 @@ RUN apk --update add --no-cache \
     curl \
     php83 \
     php83-pspell \
-    php83-mcrypt \
-    php83-imagick \
+    #php83-mcrypt \
+    #php83-imagick \
     php83-fpm \
     php83-pdo \
     php83-sqlite3 \
