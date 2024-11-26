@@ -1,44 +1,81 @@
-from nginx:latest
-MAINTAINER jkjoy <imsunpw@gmail.com>
+FROM nginx:stable-alpine
 
-ENV DEBIAN_FRONTEND noninteractive
+WORKDIR /app
 
-ENV DOCUMENT_ROOT /usr/share/nginx/html
+# Update package list and install necessary packages
+RUN apk --update add --no-cache \
+    curl \
+    php83 \
+    php83-pspell \
+    php83-mcrypt \
+    php83-imagick \
+    php83-fpm \
+    php83-pdo \
+    php83-sqlite3 \
+    php83-zip \
+    php83-curl \
+    php83-gd \
+    php83-intl \
+    php83-tidy \
+    php83-tidy \
+    php83-xsl \
+    php83-mbstring \
+    php83-dom \
+    php83-json \
+    php83-openssl \
+    php83-pdo_sqlite \
+    php83-zlib \
+    php83-shmop \
+    php83-fileinfo \
+    php83-opcache \
+    php83-imap \
+    php83-redis \
+    php83-exif \
+    php83-apcu \
+    php83-tokenizer \
+    php83-bz2 \
+    php83-ctype \
+    && rm -rf /var/cache/apk/*
 
-#Install nginx php-fpm php-pdo unzip curl
-RUN apt-get update 
-RUN apt-get -y install php8.2-fpm unzip curl apt-utils php8.2-curl php8.2-gd php8.2-intl php-pear php8.2-imagick php8.2-imap php8.2-mcrypt php8.2-ps php8.2-pspell php8.2-sqlite php8.2-tidy php8.2-xmlrpc php8.2-xsl
-
-RUN rm -rf ${DOCUMENT_ROOT}/*
 RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz
-RUN tar -xzvf /wordpress.tar.gz --strip-components=1 --directory ${DOCUMENT_ROOT}
+RUN tar -xzvf /wordpress.tar.gz --strip-components=1 --directory /app
+COPY sqlite-database-integration /app/wp-content/plugins/
+COPY config.php /app/wp-config.php
+RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
-RUN curl -o sqlite-plugin.zip https://downloads.wordpress.org/plugin/sqlite-database-integration.zip
-RUN unzip sqlite-plugin.zip -d ${DOCUMENT_ROOT}/wp-content/plugins/
-RUN rm sqlite-plugin.zip
-RUN cp ${DOCUMENT_ROOT}/wp-content/plugins/sqlite-database-integration/db.copy ${DOCUMENT_ROOT}/wp-content/db.php
-COPY config.php ${DOCUMENT_ROOT}/wp-config.php
+# Set permissions
+RUN chown -R nginx:nginx /app \
+    && chmod -R 755 /app 
 
-# nginx config
-RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
-RUN sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 20m/" /etc/nginx/nginx.conf
-RUN sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
-# php-fpm config
-RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/8.2/fpm/php.ini
-RUN sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 20M/g" /etc/php/8.2/fpm/php.ini
-RUN sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 20M/g" /etc/php/8.2/fpm/php.ini
-RUN sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php/8.2/fpm/pool.d/www.conf
-RUN sed -i -e "s/;listen.mode = 0660/listen.mode = 0666/g" /etc/php/8.2/fpm/pool.d/www.conf
+# Configure nginx
+RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf \
+    && sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 10m/" /etc/nginx/nginx.conf \
+    && sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf
 
-RUN chown -R www-data:www-data ${DOCUMENT_ROOT}
+# Configure php-fpm
+RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
+    && sed -i -e "s/upload_max_filesize\s*=\s*12M/upload_max_filesize = 100M/g" /etc/php83/php.ini \
+    && sed -i -e "s/post_max_size\s*=\s*80M/post_max_size = 100M/g" /etc/php83/php.ini \
+    && sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s/;listen.mode = 0660/listen.mode = 0666/g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s|listen = 127.0.0.1:9000|listen = /run/php-fpm83.sock|g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s|;listen.owner = nobody|listen.owner = nginx|g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s|;listen.group = nobody|listen.group = nginx|g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s|user = nobody|user = nginx|g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i -e "s|group = nobody|group = nginx|g" /etc/php83/php-fpm.d/www.conf \
+    && sed -i 's/;extension=ctype/extension=ctype/' /etc/php83/php.ini \
+    && sed -i 's/;extension=tokenizer/extension=tokenizer/' /etc/php83/php.ini
 
+# Copy nginx configuration
 COPY default /etc/nginx/sites-available/default
-RUN mkdir -p /etc/nginx/sites-enabled
-RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+RUN mkdir -p /etc/nginx/sites-enabled \
+    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-EXPOSE 80
-EXPOSE 443
+# Copy and setup start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-CMD service php8-fpm start && nginx
+EXPOSE 80 443
+
+CMD ["/start.sh"]

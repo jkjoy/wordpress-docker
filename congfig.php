@@ -59,7 +59,7 @@ define( 'NONCE_SALT',       'put your unique phrase here' );
 
 /**#@-*/
 //多域名
-define( 'WP_CONTENT_URL', '/wp-content');
+define( 'WP_CONTENT_URL', '/../wp-content');
 //后台重定向
 $_SERVER['HTTPS'] = 'on';
 define('FORCE_SSL_LOGIN', true);
@@ -94,7 +94,7 @@ define( 'WP_DEBUG', false );
 
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
+	define( 'ABSPATH', __DIR__ . '/../' );
 }
 
 /** Sets up WordPress vars and included files. */

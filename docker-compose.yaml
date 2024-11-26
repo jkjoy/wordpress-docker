@@ -1,0 +1,9 @@
+services:
+  wordpress:
+    image: jkjoy/wordpress
+    container_name: wordpress
+    restart: always
+    ports:
+      - '8080:80'
+    volumes:
+      - ./data:/app/data
