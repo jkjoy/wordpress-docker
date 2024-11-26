@@ -39,7 +39,7 @@ RUN apk --update add --no-cache \
 
 RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz \
     && tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app
-COPY sqlite-database-integration /app/wp-content/plugins/
+COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
