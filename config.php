@@ -97,7 +97,9 @@ $table_prefix = 'wp_';
 define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
-define( 'WP_CONTENT_DIR', ABSPATH . 'data' );
+
+define( 'WP_CONTENT_DIR', ABSPATH .'data' );
+define('WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/data');
 
 
 /* That's all, stop editing! Happy publishing. */
