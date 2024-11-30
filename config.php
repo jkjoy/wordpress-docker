@@ -58,31 +58,9 @@ define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
 define( 'NONCE_SALT',       'put your unique phrase here' );
 
 /**#@-*/
-// 读取环境变量并设置默认值
-$wp_home = getenv('WP_HOME') ?: 'http://localhost';
-$wp_siteurl = getenv('WP_SITEURL') ?: 'http://localhost';
 $force_ssl_login = getenv('FORCE_SSL_LOGIN') ?: 'true';
 $force_ssl_admin = getenv('FORCE_SSL_ADMIN') ?: 'true';
 $https_enabled = getenv('HTTPS_ENABLED') ?: 'true';
-
-// 获取服务器 IP 地址和域名
-$server_ip = $_SERVER['SERVER_ADDR'];
-$server_name = $_SERVER['SERVER_NAME'];
-
-// 如果环境变量没有设置，尝试使用服务器 IP 地址或域名
-if ($wp_home === 'http://localhost') {
-    if (!empty($server_name)) {
-        $wp_home = 'http://' . $server_name;
-        $wp_siteurl = 'http://' . $server_name;
-    } elseif (!empty($server_ip)) {
-        $wp_home = 'http://' . $server_ip;
-        $wp_siteurl = 'http://' . $server_ip;
-    }
-}
-
-// 设置 WP_HOME 和 WP_SITEURL
-define('WP_HOME', $wp_home);
-define('WP_SITEURL', $wp_siteurl);
 
 // 设置 SSL 相关配置
 if ($https_enabled === 'true') {
