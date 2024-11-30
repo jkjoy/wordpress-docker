@@ -55,7 +55,7 @@ RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.co
 
 # Configure php-fpm
 RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
-    && sed -i -e "s/upload_max_filesize\s*=\s*12M/upload_max_filesize = 100M/g" /etc/php83/php.ini \
+    && sed -i -e "s/upload_max_filesize\s*=\s*50M/upload_max_filesize = 100M/g" /etc/php83/php.ini \
     && sed -i -e "s/post_max_size\s*=\s*80M/post_max_size = 100M/g" /etc/php83/php.ini \
     && sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php83/php-fpm.d/www.conf \
     && sed -i -e "s/;listen.mode = 0660/listen.mode = 0666/g" /etc/php83/php-fpm.d/www.conf \
