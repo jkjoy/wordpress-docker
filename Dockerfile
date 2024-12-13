@@ -1,56 +1,43 @@
-FROM nginx:stable-alpine
+FROM alpine:latest as wordpress-downloader
+RUN apk --update add --no-cache curl tar
+RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz
+RUN mkdir -p /app && tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app
 
+FROM nginx:stable-alpine
 WORKDIR /app
 
-# Update package list and install necessary packages
 RUN apk --update add --no-cache \
     curl \
     php83 \
-    php83-pspell \
-    php83-fpm \
     php83-pdo \
     php83-sqlite3 \
     php83-zip \
     php83-curl \
     php83-gd \
     php83-intl \
-    php83-tidy \
     php83-mbstring \
     php83-dom \
     php83-json \
     php83-openssl \
     php83-pdo_sqlite \
     php83-zlib \
-    php83-shmop \
     php83-fileinfo \
     php83-opcache \
-    php83-imap \
     php83-redis \
-    php83-exif \
-    php83-apcu \
-    php83-tokenizer \
-    php83-bz2 \
-    php83-ctype \
+    php83-sodium \
     && rm -rf /var/cache/apk/*
 
-RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz \
-    && tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app
+COPY --from=wordpress-downloader /app /app
 COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
-# 设置权限
-RUN chown -R nginx:nginx /app
-RUN chmod -R 755 /app
+RUN chown -R nginx:nginx /app && chmod -R 755 /app
 
-
-# Configure nginx
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf \
     && sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 10m/" /etc/nginx/nginx.conf \
-    && sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf
-
-# Configure php-fpm
-RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
+    && sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf \
+    && sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
     && sed -i -e 's/upload_max_filesize\s*=\s*2M/upload_max_filesize = 200M/g' /etc/php83/php.ini \
     && sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php83/php.ini \
     && sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php83/php-fpm.d/www.conf \
@@ -69,15 +56,12 @@ RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
           -e 's/;zend_extension=opcache/zend_extension=opcache/g' \
           /etc/php83/php.ini
 
-# Copy nginx configuration
 COPY default /etc/nginx/sites-available/default
 RUN mkdir -p /etc/nginx/sites-enabled \
     && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Copy and setup start script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 EXPOSE 80 443
-
 CMD ["/start.sh"]
