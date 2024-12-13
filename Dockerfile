@@ -32,12 +32,17 @@ COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integra
 COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
-RUN chown -R nginx:nginx /app && chmod -R 755 /app
+# Set permissions
+RUN chown -R nginx:nginx /app \
+    && chmod -R 755 /app 
 
+
+# Configure nginx
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf \
     && sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 10m/" /etc/nginx/nginx.conf \
     && sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf
-    
+
+# Configure php-fpm
 RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
     && sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php83/php.ini \
     && sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php83/php.ini \
