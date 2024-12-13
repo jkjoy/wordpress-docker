@@ -34,8 +34,8 @@ RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-conte
 
 RUN chown -R nginx:nginx /app && chmod -R 755 /app
 
-RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf \
-    && sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 10m/" /etc/nginx/nginx.conf \
+RUN sed -i -e "s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf \
+    && sed -i -e "s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 10m/" /etc/nginx/nginx.conf \
     && sed -i -e "s|include /etc/nginx/conf.d/\*.conf|include /etc/nginx/sites-enabled/\*|g" /etc/nginx/nginx.conf \
     && sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
     && sed -i -e 's/upload_max_filesize\s*=\s*2M/upload_max_filesize = 200M/g' /etc/php83/php.ini \
@@ -47,8 +47,6 @@ RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.co
     && sed -i -e "s|;listen.group = nobody|listen.group = nginx|g" /etc/php83/php-fpm.d/www.conf \
     && sed -i -e "s|user = nobody|user = nginx|g" /etc/php83/php-fpm.d/www.conf \
     && sed -i -e "s|group = nobody|group = nginx|g" /etc/php83/php-fpm.d/www.conf \
-    && sed -i 's/;extension=ctype/extension=ctype/' /etc/php83/php.ini \
-    && sed -i 's/;extension=tokenizer/extension=tokenizer/' /etc/php83/php.ini \
     && sed -i -e 's/;extension=sockets/extension=sockets/g' \
           -e 's/;extension=sodium/extension=sodium/g' \
           -e 's/;extension=sqlite3/extension=sqlite3/g' \
