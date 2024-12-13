@@ -54,13 +54,13 @@ RUN sed -i -e "s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.c
 RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini && \
     sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php83/php.ini && \
     sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php83/php.ini && \
-    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php83/php-fpm.d/www.conf && \
-    sed -i -e "s/;listen.mode = 0660/listen.mode = 0666/g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s/;catch_workers_output\s*=.*/catch_workers_output = yes/g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s/;listen.mode = .*/listen.mode = 0666/g" /etc/php83/php-fpm.d/www.conf && \
     sed -i -e "s|listen = 127.0.0.1:9000|listen = /run/php-fpm83.sock|g" /etc/php83/php-fpm.d/www.conf && \
-    sed -i -e "s|;listen.owner = nobody|listen.owner = nginx|g" /etc/php83/php-fpm.d/www.conf && \
-    sed -i -e "s|;listen.group = nobody|listen.group = nginx|g" /etc/php83/php-fpm.d/www.conf && \
-    sed -i -e "s|user = nobody|user = nginx|g" /etc/php83/php-fpm.d/www.conf && \
-    sed -i -e "s|group = nobody|group = nginx|g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s|;listen.owner = .*|listen.owner = nginx|g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s|;listen.group = .*|listen.group = nginx|g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s|user = .*|user = nginx|g" /etc/php83/php-fpm.d/www.conf && \
+    sed -i -e "s|group = .*|group = nginx|g" /etc/php83/php-fpm.d/www.conf && \
     sed -i 's/;extension=ctype/extension=ctype/' /etc/php83/php.ini && \
     sed -i 's/;extension=tokenizer/extension=tokenizer/' /etc/php83/php.ini && \
     sed -i -e 's/;extension=sockets/extension=sockets/g' \
