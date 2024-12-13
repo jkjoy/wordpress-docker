@@ -41,9 +41,8 @@ COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integra
 COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
-# Set permissions
-RUN chown -R nginx:nginx /app \
-    && chmod -R 755 /app 
+# 设置权限
+RUN chmod -R 755 /app 
 
 
 # Configure nginx
