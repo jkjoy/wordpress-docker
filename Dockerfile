@@ -42,7 +42,7 @@ COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
 # 设置权限
-RUN chmod -R 755 /app 
+#RUN chmod -R 755 /app 
 
 
 # Configure nginx
