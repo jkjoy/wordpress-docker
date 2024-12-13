@@ -15,8 +15,6 @@ RUN apk --update add --no-cache \
     php83-gd \
     php83-intl \
     php83-tidy \
-    php83-tidy \
-    php83-xsl \
     php83-mbstring \
     php83-dom \
     php83-json \
@@ -42,7 +40,8 @@ COPY config.php /app/wp-config.php
 RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
 # 设置权限
-#RUN chmod -R 755 /app 
+RUN chown -R nginx:nginx /app
+RUN chmod -R 755 /app
 
 
 # Configure nginx
@@ -66,8 +65,6 @@ RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php83/php.ini \
     && sed -i -e 's/;extension=sockets/extension=sockets/g' \
           -e 's/;extension=sodium/extension=sodium/g' \
           -e 's/;extension=sqlite3/extension=sqlite3/g' \
-          -e 's/;extension=tidy/extension=tidy/g' \
-          -e 's/;extension=xsl/extension=xsl/g' \
           -e 's/;extension=zip/extension=zip/g' \
           -e 's/;zend_extension=opcache/zend_extension=opcache/g' \
           /etc/php83/php.ini
