@@ -28,7 +28,7 @@ else
 fi
 
 # 设置 /app/data 目录的权限为可写
-chmod -R 777 /app/data
+#chmod -R 777 /app/data
 
 # 创建符号链接
 ln -sfn /app/data /app/wp-content
