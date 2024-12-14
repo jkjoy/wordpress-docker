@@ -18,15 +18,6 @@ else
     echo " wp-config.php 存在，跳过。"
 fi
 
-# 检查 db.php 是否存在
-if [ ! -f /app/wp-content/db.php ]; then
-    echo " db.php 不存在"
-    cp -r /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
-    echo "文件复制完成。"
-else
-    echo " db.php 存在，跳过。"
-fi
-
 # 检查 /app/data/themes 目录是否存在
 if [ ! -d /app/data/themes ]; then
     echo "themes 目录不存在"
@@ -43,10 +34,8 @@ chmod -R 777 /app/data
 ln -sfn /app/data /app/wp-content
 ln -sfn /app/data/wp-config.php /app/wp-config.php
 
-# 启动 PHP-FPM 和 Nginx
-php-fpm83 -R &
-while [ ! -S /run/php-fpm83.sock ]; do
-    echo "Waiting for PHP-FPM..."
-    sleep 1
-done
+# 启动 PHP-FPM
+php-fpm83 --nodaemonize &
+
+# 启动 Nginx
 nginx -g "daemon off;"

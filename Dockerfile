@@ -1,12 +1,12 @@
 # 第一阶段：下载 WordPress
 FROM alpine:latest AS wordpress-downloader
 
+# 安装必要的工具
 RUN apk --no-cache add curl tar && \
     curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
     mkdir -p /app && \
     tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app && \
     rm wordpress.tar.gz
-
 
 # 第二阶段：设置 Nginx 和 PHP
 FROM nginx:stable-alpine
@@ -18,7 +18,8 @@ COPY --from=wordpress-downloader /app /app
 RUN chown -R nginx:nginx /app && chmod -R 755 /app
 
 # 安装 PHP 和必要的扩展
-RUN apk --update add --no-cache \
+RUN apk --no-cache add \
+    imagemagick-dev \
     php83 \
     php83-fpm \
     php83-pdo \
@@ -39,6 +40,7 @@ RUN apk --update add --no-cache \
     php83-imap \
     php83-redis \
     php83-exif \
+    php83-pecl-imagick \
     && rm -rf /var/cache/apk/*
 
 # 复制自定义 PHP 和 Nginx 配置文件
@@ -46,12 +48,14 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY php.ini /etc/php83/php.ini
 COPY www.conf /etc/php83/php-fpm.d/www.conf
 COPY default /etc/nginx/sites-available/default
-RUN mkdir -p /etc/nginx/sites-enabled \
-    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+RUN mkdir -p /etc/nginx/sites-enabled && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 # 复制 WordPress 文件和其他资源
 COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
-RUN  cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
+RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
+
 # 复制启动脚本
 COPY start.sh /start.sh
 RUN chmod +x /start.sh

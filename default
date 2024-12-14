@@ -4,7 +4,7 @@ server {
     root /app;  # 网站根目录
 
     # 默认索引文件
-    index index.php index.html index.htm;
+    index index.php;
 
     # 关闭未找到文件的日志记录
     log_not_found off;
@@ -22,15 +22,10 @@ server {
         fastcgi_temp_file_write_size 256k;
         fastcgi_read_timeout 240;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/run/php-fpm83.sock;  # 指向 php-fpm 的 Unix 套接字
+        fastcgi_pass unix:/run/php-fpm83.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
-
-        # 如果文件不存在，返回 404
-        if (!-f $document_root$fastcgi_script_name) {
-            return 404;
-        }
     }
 
     # 禁止访问 .ht 文件
