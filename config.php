@@ -57,6 +57,10 @@ define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
 define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
 define( 'NONCE_SALT',       'put your unique phrase here' );
 
+// 指定 SQLite 数据库文件的路径
+define('DB_DIR', '/app/data/database/');
+define('DB_FILE', 'wordpress.db');
+
 /**#@-*/
 $force_ssl_login = getenv('FORCE_SSL_LOGIN') ?: 'true';
 $force_ssl_admin = getenv('FORCE_SSL_ADMIN') ?: 'true';
