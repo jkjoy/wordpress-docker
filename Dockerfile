@@ -22,18 +22,28 @@ COPY --from=wordpress-downloader /app /app
 RUN chown -R nginx:nginx /app && chmod -R 755 /app
 
 # 安装 PHP 和必要的扩展
-RUN apk --no-cache add \
+RUN apk --update add --no-cache \
+    php83 \
     php83-fpm \
-    php83-mysql \
-    php83-gd \
+    php83-pdo \
+    php83-sqlite3 \
+    php83-zip \
     php83-curl \
-    php83-xml \
+    php83-gd \
+    php83-intl \
+    php83-xsl \
     php83-mbstring \
+    php83-dom \
     php83-json \
     php83-openssl \
-    php83-zip \
-    php83-opcache && \
-    rm -rf /var/cache/apk/*
+    php83-pdo_sqlite \
+    php83-zlib \
+    php83-fileinfo \
+    php83-opcache \
+    php83-imap \
+    php83-redis \
+    php83-exif \
+    && rm -rf /var/cache/apk/*
 
 # 复制自定义 PHP 和 Nginx 配置文件
 COPY php.ini /etc/php83/php.ini
