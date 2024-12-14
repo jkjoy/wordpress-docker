@@ -18,6 +18,15 @@ else
     echo " wp-config.php 存在，跳过。"
 fi
 
+# 检查 db.php 是否存在
+if [ ! -f /app/wp-content/db.php ]; then
+    echo " db.php 不存在"
+    cp -r /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
+    echo "文件复制完成。"
+else
+    echo " db.php 存在，跳过。"
+fi
+
 # 检查 /app/data/themes 目录是否存在
 if [ ! -d /app/data/themes ]; then
     echo "themes 目录不存在"
