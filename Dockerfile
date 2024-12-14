@@ -10,7 +10,6 @@ RUN apk --no-cache add curl tar && \
 # 复制 WordPress 文件和其他资源
 COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
-RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
 
 # 第二阶段：设置 Nginx 和 PHP
 FROM nginx:stable-alpine
@@ -56,14 +55,8 @@ RUN mkdir -p /etc/nginx/sites-enabled \
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# 设置运行用户
-USER nginx
-
 # 曝光必要端口
 EXPOSE 80
-
-# 健康检查
-HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
 
 # 启动服务
 CMD ["/start.sh"]
