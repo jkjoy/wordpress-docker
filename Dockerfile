@@ -45,6 +45,7 @@ RUN apk --update add --no-cache \
     && rm -rf /var/cache/apk/*
 
 # 复制自定义 PHP 和 Nginx 配置文件
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY php.ini /etc/php83/php.ini
 COPY www.conf /etc/php83/php-fpm.d/www.conf
 COPY default /etc/nginx/sites-available/default
