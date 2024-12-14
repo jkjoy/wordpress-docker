@@ -44,5 +44,9 @@ ln -sfn /app/data /app/wp-content
 ln -sfn /app/data/wp-config.php /app/wp-config.php
 
 # 启动 PHP-FPM 和 Nginx
-php-fpm83 -D
+php-fpm83 -R &
+while [ ! -S /run/php-fpm83.sock ]; do
+    echo "Waiting for PHP-FPM..."
+    sleep 1
+done
 nginx -g "daemon off;"
