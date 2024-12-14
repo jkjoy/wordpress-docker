@@ -1,42 +1,40 @@
 server {
-    listen   80;
-    server_name  _;
-    root   /app/;
-    
-    location / {
-        index  index.php;
-    }
+    listen 80;
+    server_name _;
+    root /app;  # 网站根目录
 
+    # 默认索引文件
+    index index.php index.html index.htm;
+
+    # 关闭未找到文件的日志记录
     log_not_found off;
 
-    if ($host ~* ^www\.(.*))
-    {
-        set $host_without_www $1;
-        rewrite ^/(.*)$ $scheme://$host_without_www/$1 permanent;
+    # 处理静态文件请求
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
     }
 
-    if (!-e $request_filename)
-    {
-        rewrite ^(.+)$ /index.php last;
+    # 处理 PHP 请求
+    location ~ [^/]\.php(/|$) {
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 256 16k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+        fastcgi_read_timeout 240;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php-fpm83.sock;  # 指向 php-fpm 的 Unix 套接字
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+
+        # 如果文件不存在，返回 404
+        if (!-f $document_root$fastcgi_script_name) {
+            return 404;
+        }
     }
 
-    location  ~ [^/]\.php(/|$) {
-            fastcgi_buffer_size 128k;
-            fastcgi_buffers 256 16k;
-            fastcgi_busy_buffers_size 256k;
-            fastcgi_temp_file_write_size 256k;
-            fastcgi_read_timeout 240;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass unix:/run/php-fpm83.sock;  
-            fastcgi_index index.php;
-            if (!-f $document_root$fastcgi_script_name) {
-                return 404;
-            }
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            include fastcgi_params;
-    }
-
+    # 禁止访问 .ht 文件
     location ~ /\.ht {
-        deny  all;
+        deny all;
     }
 }
