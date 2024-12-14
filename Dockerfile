@@ -38,7 +38,7 @@ RUN apk --no-cache add \
 # 复制自定义 PHP 和 Nginx 配置文件
 COPY php.ini /etc/php83/php.ini
 COPY www.conf /etc/php83/php-fpm.d/www.conf
-COPY nginx-site.conf /etc/nginx/sites-available/default
+COPY default /etc/nginx/sites-available/default
 RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # 复制启动脚本
