@@ -48,17 +48,16 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY php.ini /etc/php83/php.ini
 COPY www.conf /etc/php83/php-fpm.d/www.conf
 COPY default /etc/nginx/sites-available/default
-RUN mkdir -p /etc/nginx/sites-enabled && \
-    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
 # 复制 WordPress 文件和其他资源
 COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
-RUN cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php
-
 # 复制启动脚本
 COPY start.sh /start.sh
-RUN chmod +x /start.sh
+
+RUN chmod +x /start.sh \
+    && cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php \
+    mkdir -p /etc/nginx/sites-enabled && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # 曝光必要端口
 EXPOSE 80
