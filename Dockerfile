@@ -41,7 +41,8 @@ RUN apk --no-cache add \
     php83-redis \
     php83-exif \
     php83-pecl-imagick \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && mkdir -p /etc/nginx/sites-available/
 
 # 复制自定义 PHP 和 Nginx 配置文件
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -56,8 +57,7 @@ COPY start.sh /start.sh
 
 RUN chmod +x /start.sh \
     && cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php \
-    mkdir -p /etc/nginx/sites-enabled && \
-    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # 曝光必要端口
 EXPOSE 80
