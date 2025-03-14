@@ -57,6 +57,7 @@ COPY start.sh /start.sh
 
 RUN chmod +x /start.sh \
     && cp /app/wp-content/plugins/sqlite-database-integration/db.copy /app/wp-content/db.php \
+    && mkdir -p /etc/nginx/sites-enabled \
     && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # 曝光必要端口
