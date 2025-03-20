@@ -2,12 +2,14 @@
 FROM alpine:latest AS wordpress-downloader
 
 # 安装必要的工具
-RUN apk --no-cache add curl tar zip unzip && \
-    curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
-    mkdir -p /app && \
+RUN apk --no-cache add curl tar zip unzip 
+# 创建 /app 目录
+RUN mkdir -p /app && chmod -R 755 /app
+# 下载并解压 WordPress
+RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
     tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app && \
-    rm wordpress.tar.gz \
-    curl -o sqlite-database-integration.zip https://downloads.wordpress.org/plugin/sqlite-database-integration.2.1.16.zip && \
+    rm wordpress.tar.gz
+RUN curl -o sqlite-database-integration.zip https://downloads.wordpress.org/plugin/sqlite-database-integration.2.1.16.zip && \
     unzip sqlite-database-integration.zip -d /app/wp-content/plugins/ && \
     rm sqlite-database-integration.zip
 
