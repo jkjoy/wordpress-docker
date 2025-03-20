@@ -2,11 +2,14 @@
 FROM alpine:latest AS wordpress-downloader
 
 # 安装必要的工具
-RUN apk --no-cache add curl tar && \
+RUN apk --no-cache add curl tar zip unzip && \
     curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
     mkdir -p /app && \
     tar -xzvf wordpress.tar.gz --strip-components=1 --directory /app && \
-    rm wordpress.tar.gz
+    rm wordpress.tar.gz \
+    curl -o sqlite-database-integration.zip https://downloads.wordpress.org/plugin/sqlite-database-integration.2.1.16.zip && \
+    unzip sqlite-database-integration.zip -d /app/wp-content/plugins/ && \
+    rm sqlite-database-integration.zip
 
 # 第二阶段：设置 Nginx 和 PHP
 FROM nginx:stable-alpine
@@ -50,7 +53,6 @@ COPY php.ini /etc/php83/php.ini
 COPY www.conf /etc/php83/php-fpm.d/www.conf
 COPY default /etc/nginx/sites-available/default
 # 复制 WordPress 文件和其他资源
-COPY sqlite-database-integration /app/wp-content/plugins/sqlite-database-integration
 COPY config.php /app/wp-config.php
 # 复制启动脚本
 COPY start.sh /start.sh
